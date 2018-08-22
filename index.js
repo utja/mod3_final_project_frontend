@@ -10,10 +10,11 @@ document.addEventListener('DOMContentLoaded', function() {
       this.canvas.style.backgroundColor = "yellow"
       this.score = 0
       let scoreSpan = document.getElementById('score')
-
+      let scoreValue = 0
       setInterval(()=>{
         if (gameEnded === false) {
           this.score++
+          scoreValue = this.score
         } else {
           this.score = 0
         }
@@ -81,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let ctx = gameArea.context
     // ctx.clearRect(this.x, this.y, this.width, this.height)
     ctx.clearRect(0, 0, gameArea.canvas.width, gameArea.canvas.height)
-    this.x -= 3
+    this.x -= 10
     // ctx.beginPath()
     obstArray.forEach(function(obs){
       ctx.fillStyle = obs.color
@@ -116,15 +117,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const generateObstacle = function() {
     if (gameEnded === false) {
-      const y = Math.floor(Math.random()*gameArea.canvas.height)
+      const height = Math.floor(Math.random()*(500-200)) + 100
+      const y = Math.floor(Math.random()*(gameArea.canvas.height- 200))
       const x = gameArea.canvas.width
       const width = 50
-      const height = Math.floor(Math.random()*(500-200)) + 100
-
       const newObs = new Obstacle(x, y, width, height, 'green')
       obstArray.push(newObs)
   }
-    // newObs.renderObs()
   }
 
   const animateObstacles = function() {
@@ -226,14 +225,10 @@ document.addEventListener('DOMContentLoaded', function() {
   document.onkeydown = function(e) {
     let ctx = gameArea.context
     let moveAmount = 100
-    // ctx.clearRect(hero.x, hero.y, hero.width, hero.height)
-    const oldX = hero.x
-    const oldY = hero.y
     switch (e.key) {
       case 'ArrowUp':
         e.preventDefault()
         hero.y -= moveAmount
-        // ctx.clearRect(oldX, oldY, hero.width, hero.height)
         if (hero.y < 0) {
           hero.y = 0
         }
@@ -241,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function() {
       case 'ArrowDown':
         e.preventDefault()
         hero.y += moveAmount
-        // ctx.clearRect(oldX, oldY, hero.width, hero.height)
         if (hero.y > gameArea.canvas.height - hero.height) {
           hero.y = gameArea.canvas.height - hero.height
         }
@@ -249,7 +243,6 @@ document.addEventListener('DOMContentLoaded', function() {
       case 'ArrowLeft':
         e.preventDefault()
         hero.x -= moveAmount
-        // ctx.clearRect(oldX, oldY, hero.width, hero.height)
         if (hero.x < 0) {
           hero.x = 0
         }
@@ -257,7 +250,6 @@ document.addEventListener('DOMContentLoaded', function() {
       case 'ArrowRight':
         e.preventDefault()
         hero.x += moveAmount
-        // ctx.clearRect(oldX, oldY, hero.width, hero.height)
         if (hero.x > gameArea.canvas.width - hero.width) {
           hero.x = gameArea.canvas.width - hero.width
         }
