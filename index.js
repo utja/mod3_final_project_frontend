@@ -1,29 +1,42 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-  const startGame = () => {
-    myGameArea.start();
-  }
-
+  let gameEnded = false
   const gameArea = {
     canvas: document.createElement("canvas"),
+
     start: function(){
       this.canvas.width = 700
       this.canvas.height = 700
       this.canvas.style.backgroundColor = "yellow"
-      this.frameNo = 0
+      this.score = 0
+      let scoreSpan = document.getElementById('score')
+
+      setInterval(()=>{
+        if (gameEnded === false) {
+          this.score++
+        } else {
+          this.score = 0
+        }
+        scoreSpan.innerText = this.score
+      }, 100)
+
       this.context = this.canvas.getContext("2d")
+      gameEnded = false
       document.body.insertBefore(this.canvas, document.body.childNodes[0])
-      //add back when ready
-      // setInterval(function(){console.log('hi from interval')}, 2000)
 
     },
     clear : function() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      console.log('clear')
+      // console.log('clear')
     }
 
   }
+
   gameArea.start()
+
+  const scoreIncrement = () =>{
+    gameArea.score++
+  }
 
   const Obstacle = function(x, y, width, height, color) {
     this.score = 0
@@ -38,29 +51,23 @@ document.addEventListener('DOMContentLoaded', function() {
     this.gravitySpeed = 0
   }
 
-  Obstacle.prototype.render = function(){
-    let ctx = gameArea.context
 
-    ctx.fillStyle = this.color
-    ctx.fillRect(this.x, this.y, this.width, this.height)
-    // debugger
-  }
+  // Obstacle.prototype.animate = function(){
+  //   let ctx = gameArea.context
+  //
+  //   setInterval(function(){
+  //     // let ctx = gameArea.context
+  //     ctx.clearRect(this.x+90, this.y, 10, this.height)
+  //     this.x -= 10
+  //
+  //     // ctx.fillStyle = this.color
+  //     // ctx.fillRect(this.x, this.y, this.width, this.height)
+  //     this.render()
+  //     // console.log(this.x)
+  //   }.bind(this), 100)
+  //
+  // }
 
-  Obstacle.prototype.animate = function(){
-    let ctx = gameArea.context
-
-    setInterval(function(){
-      // let ctx = gameArea.context
-      ctx.clearRect(this.x+90, this.y, 10, this.height)
-      this.x -= 10
-
-      // ctx.fillStyle = this.color
-      // ctx.fillRect(this.x, this.y, this.width, this.height)
-      this.render()
-      // console.log(this.x)
-    }.bind(this), 100)
-
-  }
 
   // function render(object) {
   //   let ctx = gameArea.context
@@ -70,14 +77,74 @@ document.addEventListener('DOMContentLoaded', function() {
   //   ctx.fillRect(object.x, object.y, object.width, object.height)
   // }
 
+  Obstacle.prototype.renderObs = function(){
+    let ctx = gameArea.context
+    // ctx.clearRect(this.x, this.y, this.width, this.height)
+    ctx.clearRect(0, 0, gameArea.canvas.width, gameArea.canvas.height)
+    this.x -= 3
+    // ctx.beginPath()
+    obstArray.forEach(function(obs){
+      ctx.fillStyle = obs.color
+      ctx.fillRect(obs.x, obs.y, obs.width, obs.height)
+    })
+  }
 
-  let obs = new Obstacle(350, 0, 50, 200, 'green')
+  Obstacle.prototype.moveObs = function() {
+    let ctx = gameArea.context
 
-  let obsTwo = new Obstacle(350, 500, 50, 200, 'green')
+    this.x -= 10
+
+    // render()
+  }
+
+  let obstArray = []
+
+
+  // function to generate obstacles
+  // const generateObstacles = setInterval(function(){
+  //   const y = Math.floor(Math.random()*gameArea.canvas.height)
+  //   const x = gameArea.canvas.width
+  //   const width = 50
+  //   const height = Math.floor(Math.random()*500)
+  // //
+  //   const newObs = new Obstacle(x, y, width, height, 'green')
+  //   // obstArray.push(newObs)
+  //   // newObs.renderObs()
+  //   newObs.moveObs()
+  //   // console.log('generate')
+  // }, 1000)
+
+  const generateObstacle = function() {
+    if (gameEnded === false) {
+      const y = Math.floor(Math.random()*gameArea.canvas.height)
+      const x = gameArea.canvas.width
+      const width = 50
+      const height = Math.floor(Math.random()*(500-200)) + 100
+
+      const newObs = new Obstacle(x, y, width, height, 'green')
+      obstArray.push(newObs)
+  }
+    // newObs.renderObs()
+  }
+
+  const animateObstacles = function() {
+    obstArray.forEach(obstacle => {
+      obstacle.renderObs()
+      // obstacle.moveObs()
+
+      // console.log(obstacle.x)
+    })
+  }
+
+
+
+  // console.log(newObs)
+  // let obs = new Obstacle(350, 0, 50, 200, 'green')
+  //
+  // let obsTwo = new Obstacle(350, 500, 50, 200, 'green')
 
   // render(obs)
   // obs.animate()
-
 
   const Hero = function(x, y, width, height, color) {
     this.score = 0
@@ -90,71 +157,6 @@ document.addEventListener('DOMContentLoaded', function() {
     this.y = y
     this.gravity = 0
     this.gravitySpeed = 0
-  }
-
-  const hero = new Hero(0, 0, 100, 100, "blue",)
-
-  function render() {
-    let ctx = gameArea.context
-    ctx.clearRect(0,0, gameArea.canvas.width, gameArea.canvas.height)
-
-    ctx.fillStyle = obs.color
-    ctx.fillRect(obs.x, obs.y, obs.width, obs.height)
-
-    ctx.fillStyle = obsTwo.color
-    ctx.fillRect(obsTwo.x, obsTwo.y, obsTwo.width, obsTwo.height)
-
-    ctx.fillStyle = hero.color
-    ctx.fillRect(hero.x, hero.y, hero.width, hero.height)
-
-    // debugger
-    hero.checkCollision(obsTwo)
-    hero.checkCollision(obs)
-  }
-  // render()
-  // render()
-
-  function moveObs() {
-    setInterval(function(){
-    obs.x -= 10
-    obsTwo.x -= 10
-    render()
-  }, 100)}
-  moveObs()
-
-  document.onkeydown = function(e) {
-    switch (e.key) {
-      case 'ArrowUp':
-        e.preventDefault()
-        hero.y -= 100
-        if (hero.y < 0) {
-          hero.y = 0
-        }
-        break
-      case 'ArrowDown':
-        e.preventDefault()
-        hero.y += 100
-        if (hero.y > gameArea.canvas.height - hero.height) {
-          hero.y = gameArea.canvas.height - hero.height
-        }
-        break
-      case 'ArrowLeft':
-        e.preventDefault()
-        hero.x -= 100
-        if (hero.x < 0) {
-          hero.x = 0
-        }
-        break
-      case 'ArrowRight':
-        e.preventDefault()
-        hero.x += 100
-        if (hero.x > gameArea.canvas.width - hero.width) {
-          hero.x = gameArea.canvas.width - hero.width
-        }
-        break
-      default:
-        break
-    }
   }
 
   Hero.prototype.checkCollision = function (obstacle) {
@@ -171,15 +173,101 @@ document.addEventListener('DOMContentLoaded', function() {
     obstacle.bottom = obstacle.y + obstacle.height
 
     //check for collision
-    if (this.left <= obstacle.right && this.right >= obstacle.left && this.top <= obstacle.bottom && this.bottom >= obstacle.top) {
-      console.log('hit')
+    if (this.left < obstacle.right && this.right > obstacle.left && this.top < obstacle.bottom && this.bottom > obstacle.top) {
+      alert('YOU LOSE!')
+      gameArea.clear()
+      obstArray = []
+      gameEnded = true
+      hero.x = 0
+      hero.y = 300
+
+      gameArea.start()
     }
-    //  else if (this.right >= obstacle.left && this.bottom >= obstacle.top) {
-    //   console.log('pow')
-    // }
+  }
+
+  const hero = new Hero(0, 0, 75, 75, "blue",)
+
+  function render() {
+    let ctx = gameArea.context
+    // ctx.clearRect(hero.x, hero.y, hero.width, hero.height)
+    // ctx.clearRect(0, 0, gameArea.canvas.width, gameArea.canvas.height)
+    //
+    // ctx.fillStyle = obs.color
+    // ctx.fillRect(obs.x, obs.y, obs.width, obs.height)
+
+    // ctx.fillStyle = obsTwo.color
+    // ctx.fillRect(obsTwo.x, obsTwo.y, obsTwo.width, obsTwo.height)
+
+    ctx.fillStyle = hero.color
+    ctx.fillRect(hero.x, hero.y, hero.width, hero.height)
 
     // debugger
+    // hero.checkCollision(obsTwo)
+    // hero.checkCollision(obs)
   }
+
+  // render()
+
+  const play = function() {
+  setInterval(generateObstacle, 1500)
+  setInterval(() => {
+    // generateObstacle()
+    if (gameEnded === false) {
+      animateObstacles()
+      render()
+      obstArray.forEach(obst => {
+        hero.checkCollision(obst)
+      })
+    }}, 50)
+  }
+
+  play()
+  //keydown event listener for hero
+  document.onkeydown = function(e) {
+    let ctx = gameArea.context
+    let moveAmount = 100
+    // ctx.clearRect(hero.x, hero.y, hero.width, hero.height)
+    const oldX = hero.x
+    const oldY = hero.y
+    switch (e.key) {
+      case 'ArrowUp':
+        e.preventDefault()
+        hero.y -= moveAmount
+        // ctx.clearRect(oldX, oldY, hero.width, hero.height)
+        if (hero.y < 0) {
+          hero.y = 0
+        }
+        break
+      case 'ArrowDown':
+        e.preventDefault()
+        hero.y += moveAmount
+        // ctx.clearRect(oldX, oldY, hero.width, hero.height)
+        if (hero.y > gameArea.canvas.height - hero.height) {
+          hero.y = gameArea.canvas.height - hero.height
+        }
+        break
+      case 'ArrowLeft':
+        e.preventDefault()
+        hero.x -= moveAmount
+        // ctx.clearRect(oldX, oldY, hero.width, hero.height)
+        if (hero.x < 0) {
+          hero.x = 0
+        }
+        break
+      case 'ArrowRight':
+        e.preventDefault()
+        hero.x += moveAmount
+        // ctx.clearRect(oldX, oldY, hero.width, hero.height)
+        if (hero.x > gameArea.canvas.width - hero.width) {
+          hero.x = gameArea.canvas.width - hero.width
+        }
+        break
+      default:
+        break
+
+    }
+  }
+
 
 
 
