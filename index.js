@@ -73,6 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   let obs = new Obstacle(350, 0, 50, 200, 'green')
 
+  let obsTwo = new Obstacle(350, 500, 50, 200, 'green')
+
   // render(obs)
   // obs.animate()
 
@@ -99,9 +101,15 @@ document.addEventListener('DOMContentLoaded', function() {
     ctx.fillStyle = obs.color
     ctx.fillRect(obs.x, obs.y, obs.width, obs.height)
 
+    ctx.fillStyle = obsTwo.color
+    ctx.fillRect(obsTwo.x, obsTwo.y, obsTwo.width, obsTwo.height)
+
     ctx.fillStyle = hero.color
     ctx.fillRect(hero.x, hero.y, hero.width, hero.height)
 
+    // debugger
+    hero.checkCollision(obsTwo)
+    hero.checkCollision(obs)
   }
   // render()
   // render()
@@ -109,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function moveObs() {
     setInterval(function(){
     obs.x -= 10
+    obsTwo.x -= 10
     render()
   }, 100)}
   moveObs()
@@ -146,6 +155,30 @@ document.addEventListener('DOMContentLoaded', function() {
       default:
         break
     }
+  }
+
+  Hero.prototype.checkCollision = function (obstacle) {
+    //hero
+    this.left = this.x
+    this.right = this.x + this.width
+    this.top = this.y
+    this.bottom = this.y + this.height
+
+    //obstacle
+    obstacle.left = obstacle.x
+    obstacle.right = obstacle.x + obstacle.width
+    obstacle.top = obstacle.y
+    obstacle.bottom = obstacle.y + obstacle.height
+
+    //check for collision
+    if (this.left <= obstacle.right && this.right >= obstacle.left && this.top <= obstacle.bottom && this.bottom >= obstacle.top) {
+      console.log('hit')
+    }
+    //  else if (this.right >= obstacle.left && this.bottom >= obstacle.top) {
+    //   console.log('pow')
+    // }
+
+    // debugger
   }
 
 
