@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+  let scoreValue = 0
   let gameEnded = false
   const gameArea = {
     canvas: document.createElement("canvas"),
@@ -10,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
       this.canvas.style.backgroundColor = "yellow"
       this.score = 0
       let scoreSpan = document.getElementById('score')
-      let scoreValue = 0
       setInterval(()=>{
         if (gameEnded === false) {
           this.score++
@@ -171,17 +171,62 @@ document.addEventListener('DOMContentLoaded', function() {
     obstacle.top = obstacle.y
     obstacle.bottom = obstacle.y + obstacle.height
 
-    //check for collision
+    //check for collision and end game
     if (this.left < obstacle.right && this.right > obstacle.left && this.top < obstacle.bottom && this.bottom > obstacle.top) {
-      alert('YOU LOSE!')
+      alert(`YOU LOSE! YOUR SCORE IS ${scoreValue}`)
       gameArea.clear()
       obstArray = []
       gameEnded = true
       hero.x = 0
       hero.y = 300
+      postScore()
 
       gameArea.start()
     }
+  }
+
+  // const fetchUsers = function() {
+  //   fetch('http://localhost:3000/api/v1/users').then(r => r.json()).then
+  // }
+
+  const postScore = function() {
+    let config = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      body: JSON.stringify({"user_id": 1, "score": `${scoreValue}`}
+      )
+    }
+
+    fetch('http://localhost:3000/api/v1/scores', config).then(r => r.json()).then(listScores)
+  }
+
+  const parseScores = function(array) {
+    let sortedArray = array.sort(function(a, b){return b.score - a.score})
+    return sortedArray.slice(0,10)
+  }
+
+  const listScores = function() {
+    fetch('http://localhost:3000/api/v1/scores').then(r => r.json()).then(array => parseScores(array)).then(array => renderScores(array))
+  }
+
+  const makeLi = function(scoreObj) {
+    let listItem = document.createElement('li')
+    listItem.className = 'score'
+    listItem.dataset.id = `${scoreObj.id}`
+    listItem.innerText = `${scoreObj.score}`
+    return listItem
+  }
+
+  const renderScores = function(array) {
+    let scoreList = document.getElementById('scores')
+    scoreList.innerHTML = ''
+    array.forEach(el => {
+      scoreList.appendChild(makeLi(el))
+    })
+    // console.log(array)
+
   }
 
   const hero = new Hero(0, 0, 75, 75, "blue",)
