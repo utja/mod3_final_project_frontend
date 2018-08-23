@@ -115,10 +115,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (this.left < obstacle.right && this.right > obstacle.left && this.top < obstacle.bottom && this.bottom > obstacle.top) {
       alert(`YOU LOSE! YOUR SCORE IS ${scoreValue}`)
       gameArea.clear()
+      //wrap below in a restart function
       obstArray = []
       gameEnded = true
       hero.posX = 0
       hero.posY = 0
+      hero.gravitySpeed = 0
 
       postScore()
 
@@ -177,9 +179,12 @@ document.addEventListener('DOMContentLoaded', function() {
     hero.posY += hero.speedY + hero.gravitySpeed
     if (hero.posY < 0) {
       hero.posY = 0
+      hero.gravitySpeed = 0
     }
     if (hero.posY > gameArea.canvas.height - hero.height){
-      hero.posY = gameArea.canvas.height - hero.height}
+      hero.posY = gameArea.canvas.height - hero.height
+      hero.gravitySpeed = 0
+    }
     ctx.drawImage(hero, hero.posX, hero.posY)
 
     // debugger
