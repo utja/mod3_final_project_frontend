@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
+  const birdSound = new Audio('bird.mp3')
+  const collisionSound = new Audio('collision.mp3')
+  const backgroundMusic = document.getElementsByTagName('embed')[0]
 
   let scoreValue = 0
   let gameEnded = false
@@ -39,14 +42,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   const Obstacle = function(x, y, width, height, color) {
-    this.score = 0
     this.width = width
     this.height = height
     this.color = color
     this.x = x
     this.y = y
-    this.gravity = 0
-    this.gravitySpeed = 0
   }
 
   Obstacle.prototype.renderObs = function(){
@@ -62,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   Obstacle.prototype.moveObs = function() {
     let ctx = gameArea.context
-
     this.x -= 10
   }
 
@@ -92,10 +91,10 @@ document.addEventListener('DOMContentLoaded', function() {
   hero.width = 50
   hero.height = 50
   hero.speedX = 0
-  hero.speedY = 0
-  hero.posX = 0
+  hero.speedY = 3
+  hero.posX = 100
   hero.posY = 0
-  hero.gravity = 0.05
+  hero.gravity = 0.08
   hero.gravitySpeed = 0
 
   hero.checkCollision = function(obstacle) {
@@ -113,11 +112,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //check for collision and end game
     if (this.left < obstacle.right && this.right > obstacle.left && this.top < obstacle.bottom && this.bottom > obstacle.top) {
+      collisionSound.play()
       alert(`YOU LOSE! YOUR SCORE IS ${scoreValue}`)
       gameArea.clear()
       obstArray = []
       gameEnded = true
-      hero.posX = 0
+      hero.posX = 100
       hero.posY = 0
 
       postScore()
@@ -125,6 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
       gameArea.start()
     }
   }
+
 
   // const fetchUsers = function() {
   //   fetch('http://localhost:3000/api/v1/users').then(r => r.json()).then
@@ -246,6 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (e.key === ' ') {
       e.preventDefault()
       hero.gravity = -0.2
+      birdSound.play()
       // if (hero.posY < 0) {
       //   hero.posY = 0
       // }
@@ -275,15 +277,15 @@ document.addEventListener('DOMContentLoaded', function() {
   //   }
   // }
 
-  let accelerateBtn = document.getElementById('accelerate')
-  accelerateBtn.onmousedown = function() {
-    hero.gravity = -0.2
-    render()
-  }
-  accelerateBtn.onmouseup = function() {
-    hero.gravity = 0.05
-    render()
-  }
+  // let accelerateBtn = document.getElementById('accelerate')
+  // accelerateBtn.onmousedown = function() {
+  //   hero.gravity = -0.2
+  //   render()
+  // }
+  // accelerateBtn.onmouseup = function() {
+  //   hero.gravity = 0.05
+  //   render()
+  // }
 
   // debugger
 })
